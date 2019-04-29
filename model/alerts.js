@@ -5,15 +5,17 @@ const tcomb = require('tcomb')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-const USER = tcomb.struct({
-    id: tcomb.String,
-    name: tcomb.String,
-    login: tcomb.String,
-    age: tcomb.Number,
-    password: tcomb.String
+const alert = tcomb.struct({
+    id     : tcomb.String,
+    type   : tcomb.String,
+    label  : tcomb.String,
+
+    status : tcomb.String,
+    from   : tcomb.String,
+    to     : tcomb.String
 }, {strict: true})
 
-const users = [
+const alerts = [
     {
         id: '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e',
         name: 'Pedro Ramirez',
