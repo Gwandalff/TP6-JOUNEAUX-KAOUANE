@@ -5,7 +5,7 @@ const helmet = require('helmet')
 const usersRouter = require('./routes/users-v1')
 const usersModel = require('./model/users')
 
-const authRouter = require('./routes/auth')
+const authRouter = require('./routes/auth-v1')
 const tokenModel = require('./model/token')
 
 const app = express()
@@ -16,7 +16,8 @@ app.use(bodyParser.json())
 app.use(helmet({noSniff: true}))
 
 app.use((req, res, next) => {    
-    if(!req.url.includes("/v1/auth")){
+    //auth-v1 = login + verifyAccess
+    if(!req.url.includes("/v1/auth/login") && !req.method==='POST'){
         let token = null
         try {
             token = req.headers.authorization.split(" ")[1]
@@ -29,7 +30,7 @@ app.use((req, res, next) => {
                 message : "no access token"})
         }
         if (token){
-            idpModel(usersModel).checkJWT(token)
+            tokenModel.verifyToken(token)
             .then(() => {
                 next()
             })
@@ -45,14 +46,11 @@ app.use((req, res, next) => {
     else {
         next()
     }
-
-
 })
 
 // On injecte le model dans les routers. Ceci permet de supprimer la dépendance
 // directe entre les routers et le modele
 app.use('/v1/users', usersRouter(usersModel))
-
 app.use('/v1/auth', authRouter(tokenModel))
 
 // For unit tests

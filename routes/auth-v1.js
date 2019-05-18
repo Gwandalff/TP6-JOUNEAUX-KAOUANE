@@ -15,7 +15,7 @@ router.use((req, res, next) => {
 })
 
 /* GET a specific user by id */
-router.get('/verifyaccess', function (req, res, next) {
+router.get('/verifyaccess', (req, res, next) =>{
     let token = null
     try{
       token = req.headers.authorization.split(" ")[1]

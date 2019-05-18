@@ -13,6 +13,10 @@ router.use((req, res, next) => {
   next()
 })
 
+router.get('/', function (req, res, next) {
+  res.json(usersModel.getAll())
+})
+
 router.get('/:id', function (req, res, next) {
   const id = req.params.id
 
@@ -41,23 +45,22 @@ router.get('/:id', function (req, res, next) {
   }
 })
 
-
-router.post('/', function (req, res, next) {
+// ajout d'un nouvel utilisateur
+router.post('/', async (req, res, next) => {
   const newUser = req.body
 
-
   if (newUser) {
-    try {
-      const user = usersModel.add(newUser)
-      req
-        .res
-        .status(201)
-        .send(user)
-    } catch (exc) {
+    await usersModel.add(newUser)
+    .then((user) => {
+    res
+      .status(201)
+      .send(user)
+    })
+    .catch((exc) => {
       res
         .status(400)
         .json({message: exc.message})
-    }
+    })
   } else {
     res
       .status(400)
@@ -66,14 +69,14 @@ router.post('/', function (req, res, next) {
 })
 
 
-router.patch('/:id', function (req, res, next) {
+router.patch('/:id', async (req, res, next) => {
   const id = req.params.id
   const newUserProperties = req.body
 
 
   if (id && newUserProperties) {
     try {
-      const updated = usersModel.update(id, newUserProperties)
+      const updated = await usersModel.update(id, newUserProperties)
       res
         .status(200)
         .json(updated)
@@ -84,7 +87,8 @@ router.patch('/:id', function (req, res, next) {
         res
           .status(404)
           .json({message: `User not found with id ${id}`})
-      } else {
+      } 
+      else {
         res
           .status(400)
           .json({message: 'Invalid user data'})
@@ -124,8 +128,7 @@ router.delete('/:id', function (req, res, next) {
       .status(400)
       .json({message: 'Wrong parameter'})
   }
-router.get('/', function (req, res, next) {
-  res.json(usersModel.getAll())
+
 })
 
 
