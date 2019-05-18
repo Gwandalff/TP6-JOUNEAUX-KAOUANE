@@ -1,57 +1,51 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const helmet = require('helmet')
+const mongoose = require('mongoose')
+const config = require('config')
+const jwt = require('jsonwebtoken')
 
-const usersRouter = require('./routes/users-v1')
-const usersModel = require('./model/users')
+require('dotenv').config()
 
-const authRouter = require('./routes/auth-v1')
-const tokenModel = require('./model/token')
+const { port: db_port, host: db_host, name: db_name, username: db_username, password: db_password } = config.get('Database')
+
+if(db_username !== "" && db_password !== "") {
+  mongoose.connect(`mongodb://${db_username}:${db_password}@${db_host}:${db_port}/${db_name}`, {useNewUrlParser: true});
+} else {
+  mongoose.connect(`mongodb://${db_host}:${db_port}/${db_name}`, {useNewUrlParser: true});
+}
+
+const alertsRouter = require('./routes/alerts-v1')
+const alertsService = require('./services/alertsService')
 
 const app = express()
+
+const authChecker = async (req, res, next) => {
+  if (!req.headers.authorization) {
+    return res.status(401).send()
+  }
+  let token = req.headers.authorization.split(' ')[1]
+
+  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    if(err !== null) {
+      res.status(401).json({
+        message: "Unauthorized",
+        type: "Unauthorized",
+        code: 0
+      })
+    } else {
+      next()
+    }
+  })
+}
+
+app.use(authChecker)
 
 app.use(bodyParser.json())
 
 // Activation de Helmet
 app.use(helmet({noSniff: true}))
 
-app.use((req, res, next) => {    
-    //auth-v1 = login + verifyAccess
-    if(!req.url.includes("/v1/auth/login") && !req.method==='POST'){
-        let token = null
-        try {
-            token = req.headers.authorization.split(" ")[1]
-        } 
-        catch (error) {
-            res
-            .status(401)
-            .json({ code    : 0,
-                type    : "authorization",
-                message : "no access token"})
-        }
-        if (token){
-            tokenModel.verifyToken(token)
-            .then(() => {
-                next()
-            })
-            .catch(() => {
-                res
-                .status(401)
-                .json({ code    : 0,
-                    type    : "authorization",
-                    message : "unvalid access token"})
-            })
-        }
-    }
-    else {
-        next()
-    }
-})
+app.use('/alerts', alertsRouter(alertsService))
 
-// On injecte le model dans les routers. Ceci permet de supprimer la dépendance
-// directe entre les routers et le modele
-app.use('/v1/users', usersRouter(usersModel))
-app.use('/v1/auth', authRouter(tokenModel))
-
-// For unit tests
 exports.app = app
