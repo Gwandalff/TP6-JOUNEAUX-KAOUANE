@@ -6,6 +6,7 @@
         "password": ""
     },
     "Serveur": {
+        "host": "",
         "port": "3000"
     }
 }
