@@ -10,10 +10,10 @@ Réaliser un service avec NodeJS et MongoDB offrant une API CRUD.
 ## Reflexion du travail
 
 On a repris la première partie du TP pour l'étendre aux alertes.
-On est parti sur du Mongo, puisqu'on ne connaissait pas et que c'était un bon moyen de découvire.
+On s'est référé au swagger donné pour concevoir les class et méthodes.
+On est parti sur du Mongo, puisqu'on ne connaissait pas et que c'était un bon moyen de découvir.
 
 ## Limite du travail
 
-Le TP ne fonctionne pas comme il l'est demandé.
-
+Le TP ne fonctionne pas comme il l'est demandé. 
 Manque de temps..
