@@ -16,7 +16,7 @@ if(db_username !== "" && db_password !== "") {
 }
 
 const alertsRouter = require('./routes/alerts-v1')
-const alertsModule = require('./alertsModel/alertsModels')
+const alertsModel = require('./alertsModel/alertsModels')
 
 const app = express()
 
@@ -46,6 +46,6 @@ app.use(bodyParser.json())
 // Activation de Helmet
 app.use(helmet({noSniff: true}))
 
-app.use('/alerts', alertsRouter(alertsModule))
+app.use('/alerts', alertsRouter(alertsModel))
 
 exports.app = app
