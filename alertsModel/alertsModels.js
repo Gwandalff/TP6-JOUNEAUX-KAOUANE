@@ -1,4 +1,4 @@
-const {Alert} = require('../models/alert')
+const {Alert} = require('../model/alerts')
 const ObjectId = require('mongoose').Types.ObjectId
 
 //d'aprsè le swagger

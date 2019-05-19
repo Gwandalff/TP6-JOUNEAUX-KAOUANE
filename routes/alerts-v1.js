@@ -82,16 +82,16 @@ router.put('/:alertId', async (req, res, next) => {
     }
 })
 
-router.delete('/:alertId', function (req, res, next) {
-    let { id } = req.params
+router.delete('/:alertId', async (req, res, next)=> {
+    let {id} = req.params
 
-    if (!alertsService.isValidId(id)) {
+    if (!alertsModel.isValidId(id)) {
       res.status(400).send()
       return
     }
     try 
     {
-      await alertsService.deleteAlert(id, req.body)
+      await alertsModel.deleteAlert(id, req.body)
       res.status(200).send()
     } catch(err) {
       res.status(404).send()
